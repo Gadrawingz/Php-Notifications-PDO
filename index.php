@@ -1,22 +1,4 @@
 <?php
-session_start();
-if(!isset($_SESSION['User']) || !isset($_SESSION['UserId'])) {
-  echo "<script>window.location='./../'</script>"; // redir u to index shit
-}
-
-include ('../account/acc_query.php');
-$hobj= new AccountQuery;
-
-include_once('../comments/comqueries.php');
-$comobj = new TcommentsQueries;
-
-include_once('nqueries.php');
-$nobj= new NotificationsQuery;
-
-
-if(isset($_REQUEST['/'])) {
-  echo "<script>window.location='../notifications/'</script>"; // redir u to index shit
-}
 
 ?>
 <!DOCTYPE html>
@@ -72,10 +54,6 @@ $userrow = $getuserd->FETCH(PDO::FETCH_ASSOC);
 $getg = $nobj->getReplies4SingleUserByStuffId($notifrow['stuff_id']);
 $reprow = $getg->FETCH(PDO::FETCH_ASSOC);
 
-  // I wanna get only u_data for someone who posted a post with that id
-  $gett = $nobj->getPosts4SingleUserByStuffId($notifrow['stuff_id']);
-  $trow = $gett->FETCH(PDO::FETCH_ASSOC);
-
 // For using it for friendship case
 $to_user_followed_friend = $hobj->getUserDetails($notifrow['stuff_id']);
 $to_urow = $to_user_followed_friend->FETCH(PDO::FETCH_ASSOC);
@@ -83,8 +61,7 @@ $to_urow = $to_user_followed_friend->FETCH(PDO::FETCH_ASSOC);
 
 
   /*
-  ahangaha izajya izimarking as seen igendeye kuri stuff id ishobora kuba 
-  (1)tpost_id, (2)tcom_id cg (3)followed user!
+If notification is seen
   */
   if(isset($_GET['_notifseen'])) {
   $nobj->markNotifsAsSeenByClicking($_SESSION['UserId']);
@@ -115,7 +92,7 @@ $to_urow = $to_user_followed_friend->FETCH(PDO::FETCH_ASSOC);
         $uuurow = $utcstmt->FETCH(PDO::FETCH_ASSOC);
         ?>
 
-          &#9997; <?php echo $userrow['username'];?> commented to your topic (<?php echo $notifrow['stuff_id']." - ".$nobj->limitNotifStringToDisplay($trow['tpost_content'])." (".$uuurow['username'];?>) &bull; <?php echo date('j F, g:i',strtotime($notifrow['action_date']));?>
+          <?php echo $userrow['username'];?> commented to your topic (<?php echo $notifrow['stuff_id']." - ".$nobj->limitNotifStringToDisplay($trow['tpost_content'])." (".$uuurow['username'];?>) &bull; <?php echo date('j F, g:i',strtotime($notifrow['action_date']));?>
         </div>
       </a>
     <?php } ?>
